@@ -1,11 +1,10 @@
-const express = require('express');
-// const routes = require('./routes');
-const sequelize = require ('./config/connection')
-const app = express();
-const PORT = process.env.PORT || 3001;
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(routes);
-sequelize.sync({ force: false}).then(() => {
-app.listen(PORT, () => { console.log(`App listening on port PORT!`)});
+const { connect, connection } = require('mongoose')
+
+const connectionString = process.env.MONGODB_URI || 'mongodb://localhost:27017/(your db here)'
+
+connect(connectionString, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
 })
+
+module.exports = connection;
