@@ -1,58 +1,104 @@
-const { Course, Student } = require('../models');
+const { ObjectId } = require('mongoose').Types;
+const Thought = require('../models/Thought');
 
 module.exports = {
-  // Get all courses
-  getCourses(req, res) {
-    Course.find()
-      .then((courses) => res.json(courses))
-      .catch((err) => res.status(500).json(err));
-  },
-  
-  // Get a course
-  getSingleCourse(req, res) {
-    Course.findOne({ _id: req.params.courseId })
-      .select('-__v')
-      .then((course) =>
-        !course
-          ? res.status(404).json({ message: 'No course with that ID' })
-          : res.json(course)
-      )
-      .catch((err) => res.status(500).json(err));
-  },
-
-  // Create a course
-  createCourse(req, res) {
-    Course.create(req.body)
-      .then((course) => res.json(course))
+  // Get all thoughts
+  getThoughts(req, res) {
+    Thought.find()
+      .then(async (thoughts) => {
+        const thoughtObj = {
+          thoughts,
+          headCount: await headCount(),
+        };
+        return res.json(thoughtObj);
+      })
       .catch((err) => {
         console.log(err);
         return res.status(500).json(err);
       });
   },
 
-  // Delete a course
-  deleteCourse(req, res) {
-    Course.findOneAndDelete({ _id: req.params.courseId })
-      .then((course) =>
-        !course
-          ? res.status(404).json({ message: 'No course with that ID' })
-          : Student.deleteMany({ _id: { $in: course.students } })
+  // Get a single thought
+  getSingleThought(req, res) {
+    Thought.findOne({ _id: req.params.ThoughtId })
+      .select('-__v')
+      .populate('reactions')
+      .then(async (thought) =>
+        !thought
+          ? res.status(404).json({ message: 'No thoughts here.' })
+          : res.json(thought)
       )
-      .then(() => res.json({ message: 'Course and students deleted!' }))
-      .catch((err) => res.status(500).json(err));
+      .catch((err) => {
+        console.log(err);
+        return res.status(500).json(err);
+      });
   },
 
-  // Update a course
-  updateCourse(req, res) {
-    Course.findOneAndUpdate(
-      { _id: req.params.courseId },
+//create a thought
+createThought(req, res) {
+  Thought.create(req.body)
+  .then((thought) => 
+  Thought.findOneAndUpdate(
+    { _id: req.body.userId },
+    { $addToSet: { thoughts: thought._id }},
+    { runValidators: true, new: true })
+  )
+  .then((thought) => res.json(thought))
+  .catch((err) => res.status(500).json(err))
+},
+
+  //update a thought
+  updateThought(req, res) {
+    Thought.findOneAndUpdate(
+      { _id: ObjectId(req.params.thoughtId) },
       { $set: req.body },
       { runValidators: true, new: true }
     )
-      .then((course) =>
-        !course
-          ? res.status(404).json({ message: 'No course with this id!' })
-          : res.json(course)
+      .then((thought) =>
+        !thought
+          ? res.status(404).json({ message: "No thoughts here.." })
+          : res.json(thought)
+      )
+      .catch((err) => res.status(500).json(err));
+    },
+
+  // Remove user
+  deleteThought(req, res) {
+    Thought.findOneAndDelete({ _id: req.params.thoughtId })
+      .then((thought) =>
+        !thought
+          ? res.status(404).json({ message: "No thought." })
+          : res.json ({ message: "This thought has been terminated." })
+      )
+      .catch ((err) => res.status(500).json(err));
+},
+
+//add a reaction
+addReaction(req, res) {
+    Thought.findOneAndUpdate(
+      { _id: req.params.thoughtId },
+      { $addToSet: { reactions: req.body } },
+      { new: true }
+  )
+  .then((thought) =>
+  !thought
+    ? res.status(404).json({ message: 'No thought was given to the ID number, was it?.'})
+    : res.json(thought)
+  )
+  .catch((err) => res.status(500).json(err));
+  },
+
+//terminate a reaction
+terminateReaction(req,res) {
+        Thought.findOneAndUpdate(
+          { _id: req.params.thoughtId},
+          { $pull: { reactions: { _id: req.params.reactionId }}},
+          { new: true},
+        )
+        .then((thought) =>
+      !thought
+        ? res.status(404).json({ message: 'No thought was bought.'})
+        : res.json(thought)
       )
       .catch((err) => res.status(500).json(err));
   },
