@@ -56,6 +56,7 @@ module.exports = {
       )
       .catch((err) => res.status(500).json(err));
     },
+
   // Remove user
   deleteUser(req, res) {
     User.findOneAndDelete({ _id: req.params.userId })
@@ -65,5 +66,21 @@ module.exports = {
           : res.json ({ message: "That user has been terminated." })
       )
       .catch ((err) => res.status(500).json(err));
-}
+},
+
+addFriendo(req, res) {
+    User.findOne({ _id: req.params.friendId })
+      .then((friend) =>
+        !friend
+          ? res.status(404).json({ message: "You sure about that? Try again." })
+          : User.findOneAndUpdate(
+              { _id: req.params.userId },
+              { $addToSet: { friends: friend } },
+              { runValidators: true, new: true }
+            )
+      )
+      .then(() => res.json({ message: "friend added!" }))
+      .catch((err) => res.status(500).json(err));
+  },
+
 };
