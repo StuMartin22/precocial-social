@@ -1,1 +1,1 @@
-// set up like other ones but doesnt have the line at tht ebottom and needs to be put into the thought model
+// set up like other ones but doesnt h
