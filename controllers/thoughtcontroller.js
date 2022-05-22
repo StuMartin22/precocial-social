@@ -7,6 +7,7 @@ module.exports = {
       .then((courses) => res.json(courses))
       .catch((err) => res.status(500).json(err));
   },
+  
   // Get a course
   getSingleCourse(req, res) {
     Course.findOne({ _id: req.params.courseId })
@@ -18,6 +19,7 @@ module.exports = {
       )
       .catch((err) => res.status(500).json(err));
   },
+
   // Create a course
   createCourse(req, res) {
     Course.create(req.body)
@@ -27,6 +29,7 @@ module.exports = {
         return res.status(500).json(err);
       });
   },
+
   // Delete a course
   deleteCourse(req, res) {
     Course.findOneAndDelete({ _id: req.params.courseId })
@@ -38,6 +41,7 @@ module.exports = {
       .then(() => res.json({ message: 'Course and students deleted!' }))
       .catch((err) => res.status(500).json(err));
   },
+
   // Update a course
   updateCourse(req, res) {
     Course.findOneAndUpdate(
