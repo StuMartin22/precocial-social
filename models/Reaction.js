@@ -1,8 +1,12 @@
 
-const { Schema, model } = require("mongoose");
+const { Schema, model } = require('mongoose');
 
-const reactionSchema = new Schema(
+const reactSchema = new Schema(
   {
+    reactionID: {
+        type: Schema.Types.ObjectId,
+        default: () => new Types.ObjectId()
+    },
     reactionBody: {
       type: String,
       required: true,
@@ -14,7 +18,8 @@ const reactionSchema = new Schema(
     },
     createdAt: {
       type: Date,
-      default: Date.now(),
+      default: Date.now,
+      get: (createdAtVal) => moment(createdAtVal).format('MMM DD, YYYY [at] hh:mm a'),
     },
   },
   {
@@ -26,4 +31,4 @@ const reactionSchema = new Schema(
   }
 );
 
-module.exports = reactionSchema;
+module.exports = reactSchema;

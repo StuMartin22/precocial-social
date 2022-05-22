@@ -1,6 +1,8 @@
 const moment = require('moment');
-const User = require('./user');
-const thoughSchema = new Schema(
+const User = require('./User');
+const reactSchema = require ('./Reaction')
+
+const thoughtSchema = new Schema(
     {
       thoughtText: {
         type: String,
@@ -17,12 +19,7 @@ const thoughSchema = new Schema(
         required: true,
         ref: 'User',
       },
-        friends: [
-          {
-            type: Schema.Types.ObjectId,
-            ref: "User",
-          },
-      ],
+      reactions:[reactSchema]
   },
     {
       toJSON: {
@@ -31,3 +28,11 @@ const thoughSchema = new Schema(
       },
     }
   );
+
+thoughtSchema
+.virtual('reactionCount')
+.get(function (){
+    return `this.reactions.length`
+})
+
+  module.exports = thoughtSchema;
