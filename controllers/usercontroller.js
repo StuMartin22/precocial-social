@@ -83,4 +83,17 @@ addFriendo(req, res) {
       .catch((err) => res.status(500).json(err));
   },
 
-};
+terminateFriendo(req,res) {
+      User.findOneAndUpdate(
+        { _id: req.params.userId },
+        { $pull: { friends: req.params.friendId } },
+        { new: true }
+      )
+        .then((user) =>
+          !user
+            ? res.status(404).json({ message: "No user has that ID." })
+            : res.json({ message: "friend terminated!" })
+        )
+        .catch((err) => res.status(500).json(err));
+    },
+  };
