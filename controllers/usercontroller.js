@@ -1,40 +1,69 @@
-const { Post, Comment } = require('../models');
+const { ObjectId } = require('mongoose').Types;
+const User = require('../models/user');
 
 module.exports = {
-  getComments(req, res) {
-    Comment.find()
-      .then((comment) => res.json(comment))
-      .catch((err) => res.status(500).json(err));
-  },
-  // Get a single comment
-  getSingleComment(req, res) {
-    Comment.findOne({ _id: req.params.commentId })
-      .then((comment) =>
-        !comment
-          ? res.status(404).json({ message: 'No comment found with that id' })
-          : res.json(comment)
-      )
-      .catch((err) => res.status(500).json(err));
-  },
-  // Create a comment
-  createComment(req, res) {
-    Comment.create(req.body)
-      .then((comment) => {
-        return Post.findOneAndUpdate(
-          { _id: req.body.postId },
-          { $push: { comments: comment._id } },
-          { new: true }
-        );
+  // Get all users
+  getUsers(req, res) {
+    User.find()
+      .then(async (users) => {
+        const userObj = {
+          users,
+          headCount: await headCount(),
+        };
+        return res.json(userObj);
       })
-      .then((post) =>
-        !post
-          ? res
-              .status(404)
-              .json({ message: 'comment created, but no posts with this ID' })
-          : res.json({ message: 'comment created' })
-      )
       .catch((err) => {
-        console.error(err);
+        console.log(err);
+        return res.status(500).json(err);
       });
   },
+
+  // Get a single user
+  getSingleUser(req, res) {
+    User.findOne({ _id: req.params.UserId })
+      .select('-__v')
+      .populate('thoughts')
+      .populate('friends')
+      .then(async (user) =>
+        !user
+          ? res.status(404).json({ message: 'No user with that ID' })
+          : res.json(user)
+      )
+      .catch((err) => {
+        console.log(err);
+        return res.status(500).json(err);
+      });
+  },
+
+  // create a new user
+  createUser(req, res) {
+    User.create(req.body)
+      .then((user) => res.json(user))
+      .catch((err) => res.status(500).json(err));
+  },
+
+  //update a user
+  updateUser(req, res) {
+    User.findOneAndUpdate(
+      { _id: ObjectId(req.params.userId) },
+      { $set: req.body },
+      { runValidators: true, new: true }
+    )
+      .then((user) =>
+        !user
+          ? res.status(404).json({ message: "No user with that ID." })
+          : res.json(user)
+      )
+      .catch((err) => res.status(500).json(err));
+    },
+  // Remove user
+  deleteUser(req, res) {
+    User.findOneAndDelete({ _id: req.params.userId })
+      .then((user) =>
+        !user
+          ? res.status(404).json({ message: "No user has that ID." })
+          : res.json ({ message: "That user has been terminated." })
+      )
+      .catch ((err) => res.status(500).json(err));
+}
 };

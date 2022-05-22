@@ -1,27 +1,17 @@
-//required up here - Done
-
-// username {} - Done
-
-// email {} - Done
-
-// thoughts Array - Done
-
-// friends Array - Done
-
-// virtual friend count - 
-
 const { Schema, model } = require('mongoose');
 const User = model('user', userSchema);
 
 // Schema to create Student model
 const userSchema = new Schema(
   {
+      //username info
     username: {
       type: String,
       unique: true,
       required: true,
       trim: true,
     },
+    //email info
     email: {
       type: String,
       unique: true,
@@ -31,12 +21,14 @@ const userSchema = new Schema(
       validate: [validateEmail, 'Please fill a valid email address'],
       match: [/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, 'Please enter a valid email'],
     },
+    //adding thoughts array
     thoughts: [
         {
           type: Schema.Types.ObjectId,
           ref: "Thought",
         },
       ],
+      //adding friends array
       friends: [
         {
           type: Schema.Types.ObjectId,
@@ -45,6 +37,7 @@ const userSchema = new Schema(
     ],
 },
   {
+      //converting object to json and including virtuals.
     toJSON: {
       virtuals: true,
     //   getters: true,
@@ -52,20 +45,21 @@ const userSchema = new Schema(
   }
 );
 
+//forces user email to be lower cased.
 const user = new User({ email: 'TEST@gmail.com' });
 user.email; 
 
-// The raw value of `email` is lowercased
 user.get('email', null, { getters: false }); 
 
 user.set({ email: 'NEW@gmail.com' });
 user.email; 
 
+//creates virtual for friend count.
 userSchema
 .virtual('friendCount')
 .get(function (){
     return `this.friends.length`
 })
 
-
+//export User info
 module.exports = User;
