@@ -1,11 +1,18 @@
+require("dotenv").config();
 const express = require("express");
-// const router = require("./controllers");
-// const thoughtcontroller = require('./routes/thoughtcontroller');
-// const usercontroller = require('./routes/usercontroller');
-const PORT = process.env.PORT || 3001;
-const app = express();
+const db = require("./config/connection");
+const routes = require("./routes");
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-// app.use(router);
-app.listen(PORT, () => console.log(`Listening on PORT: 3001`));
+const PORT = process.env.PORT || 3000;
+
+const server = express();
+
+server.use(express.urlencoded({ extended: true }));
+server.use(express.json());
+server.use(routes);
+
+db.once("open", () => {
+  server.listen(PORT, () => {
+    console.log(`Server and API are running on ${PORT}`);
+  });
+});
