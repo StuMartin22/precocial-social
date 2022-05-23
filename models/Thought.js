@@ -1,5 +1,4 @@
 const moment = require('moment');
-const User = require('./User');
 const reactSchema = require ('./Reaction')
 
 const thoughtSchema = new Schema(
