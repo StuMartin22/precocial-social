@@ -20,9 +20,6 @@ module.exports = {
   // Get a single user
   getSingleUser(req, res) {
     User.findOne({ _id: req.params.userId })
-      // .select('-__v')
-      // .populate('thoughts')
-      // .populate('friends')
       .then(async (user) =>
         !user
           ? res.status(404).json({ message: 'No user with that ID' })
@@ -67,6 +64,7 @@ module.exports = {
       .catch ((err) => res.status(500).json(err));
 },
 
+//add friend
 addFriendo(req, res) {
     User.findOne({ _id: req.params.friendId })
       .then((friend) =>
@@ -82,6 +80,7 @@ addFriendo(req, res) {
       .catch((err) => res.status(500).json(err));
   },
 
+  //remove friend
 terminateFriendo(req,res) {
       User.findOneAndUpdate(
         { _id: req.params.userId },

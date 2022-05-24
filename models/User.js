@@ -1,10 +1,11 @@
 const { Schema, model } = require('mongoose');
+
 var emailCheck = function(email) {
   var re = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
   return re.test(email)
 };
 
-// Schema to create Student model
+// Schema to create user model
 const userSchema = new Schema(
   {
       //username info
@@ -43,7 +44,7 @@ const userSchema = new Schema(
       //converting object to json and including virtuals.
     toJSON: {
       virtuals: true,
-    //   getters: true,
+      // getters: true,
     },
   }
 );

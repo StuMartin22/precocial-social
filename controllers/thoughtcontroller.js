@@ -1,5 +1,5 @@
 const { ObjectId } = require('mongoose').Types;
-const Thought = require('../models/Thought');
+const { Thought, User } = require('../models/Thought');
 
 module.exports = {
   // Get all thoughts
@@ -19,7 +19,7 @@ module.exports = {
 
   // Get a single thought
   getSingleThought(req, res) {
-    Thought.findOne({ _id: req.params.ThoughtId })
+    Thought.findOne({ _id: req.params.thoughtId })
       // .select('-__v')
       // .populate('reactions')
       .then(async (thought) =>
@@ -30,28 +30,30 @@ module.exports = {
       .catch((err) => {
         console.log(err);
         return res.status(500).json(err);
-      });
+      })
   },
 
 //create a thought
 createThought(req, res) {
   Thought.create(req.body)
-  .then((thought) => 
-  Thought.findOneAndUpdate(
-    { _id: req.body.userId },
+  .then((thought) => {
+  User.findOneAndUpdate(
+    { username: req.body.username },
     { $addToSet: { thoughts: thought._id }},
-    { runValidators: true, new: true })
-  )
-  .then((thought) => res.json(thought))
-  .catch((err) => res.status(500).json(err))
+    { new: true }
+)
+  })
+  .then((user) => res.json(user))
+  .catch((err) => res.status(500).json(err));
 },
+
 
   //update a thought
   updateThought(req, res) {
     Thought.findOneAndUpdate(
       { _id: ObjectId(req.params.thoughtId) },
       { $set: req.body },
-      { runValidators: true, new: true }
+      { new: true }
     )
       .then((thought) =>
         !thought
@@ -61,7 +63,7 @@ createThought(req, res) {
       .catch((err) => res.status(500).json(err));
     },
 
-  // Remove user
+  // Remove thought
   deleteThought(req, res) {
     Thought.findOneAndDelete({ _id: req.params.thoughtId })
       .then((thought) =>
@@ -100,5 +102,5 @@ terminateReaction(req,res) {
         : res.json(thought)
       )
       .catch((err) => res.status(500).json(err));
-  },
+  }
 };
