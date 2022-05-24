@@ -8,7 +8,6 @@ module.exports = {
       .then(async (users) => {
         const userObj = {
           users,
-          headCount: await headCount(),
         };
         return res.json(userObj);
       })
@@ -20,10 +19,10 @@ module.exports = {
 
   // Get a single user
   getSingleUser(req, res) {
-    User.findOne({ _id: req.params.UserId })
-      .select('-__v')
-      .populate('thoughts')
-      .populate('friends')
+    User.findOne({ _id: req.params.userId })
+      // .select('-__v')
+      // .populate('thoughts')
+      // .populate('friends')
       .then(async (user) =>
         !user
           ? res.status(404).json({ message: 'No user with that ID' })
@@ -32,7 +31,7 @@ module.exports = {
       .catch((err) => {
         console.log(err);
         return res.status(500).json(err);
-      });
+      })
   },
 
   // create a new user
@@ -79,7 +78,7 @@ addFriendo(req, res) {
               { runValidators: true, new: true }
             )
       )
-      .then(() => res.json({ message: "friend added!" }))
+      .then((user) => res.json({ message: "friend added!" }))
       .catch((err) => res.status(500).json(err));
   },
 

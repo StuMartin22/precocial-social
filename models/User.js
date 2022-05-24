@@ -1,5 +1,8 @@
 const { Schema, model } = require('mongoose');
-const User = model('user', userSchema);
+var emailCheck = function(email) {
+  var re = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+  return re.test(email)
+};
 
 // Schema to create Student model
 const userSchema = new Schema(
@@ -15,10 +18,10 @@ const userSchema = new Schema(
     email: {
       type: String,
       unique: true,
-      required: true,
       validate: true,
+      required: true,
       required: 'Email address is required',
-      validate: [validateEmail, 'Please fill a valid email address'],
+      validate: [emailCheck, 'Please fill a valid email address'],
       match: [/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, 'Please enter a valid email'],
     },
     //adding thoughts array
@@ -45,6 +48,8 @@ const userSchema = new Schema(
   }
 );
 
+const User = model('user', userSchema);
+
 //forces user email to be lower cased.
 const user = new User({ email: 'TEST@gmail.com' });
 user.email; 
@@ -58,8 +63,11 @@ user.email;
 userSchema
 .virtual('friendCount')
 .get(function (){
-    return `this.friends.length`
+    return this.friends.length
 })
+
+
 
 //export User info
 module.exports = User;
+

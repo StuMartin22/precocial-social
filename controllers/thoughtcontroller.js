@@ -8,7 +8,6 @@ module.exports = {
       .then(async (thoughts) => {
         const thoughtObj = {
           thoughts,
-          headCount: await headCount(),
         };
         return res.json(thoughtObj);
       })
@@ -21,8 +20,8 @@ module.exports = {
   // Get a single thought
   getSingleThought(req, res) {
     Thought.findOne({ _id: req.params.ThoughtId })
-      .select('-__v')
-      .populate('reactions')
+      // .select('-__v')
+      // .populate('reactions')
       .then(async (thought) =>
         !thought
           ? res.status(404).json({ message: 'No thoughts here.' })
