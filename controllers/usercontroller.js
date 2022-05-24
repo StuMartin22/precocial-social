@@ -73,7 +73,7 @@ addFriendo(req, res) {
           : User.findOneAndUpdate(
               { _id: req.params.userId },
               { $addToSet: { friends: friend } },
-              { runValidators: true, new: true }
+              { new: true }
             )
       )
       .then((user) => res.json({ message: "friend added!" }))
