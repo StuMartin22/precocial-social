@@ -3,10 +3,10 @@ const { Schema, model } = require('mongoose');
 //creating reactSchema
 const reactSchema = new Schema(
   {
-    reactionID: {
-        type: Schema.Types.ObjectId,
-        default: () => new Types.ObjectId()
-    },
+    // reactionID: {
+    //     type: Schema.Types.ObjectId,
+    //     default: () => new Types.ObjectId()
+    // },
     reactionBody: {
       type: String,
       required: true,

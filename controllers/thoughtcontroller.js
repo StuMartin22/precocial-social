@@ -1,5 +1,5 @@
 const { ObjectId } = require('mongoose').Types;
-const { Thought, User } = require('../models/Thought');
+const { Thought, User } = require('../models');
 
 module.exports = {
   // Get all thoughts
@@ -42,11 +42,9 @@ createThought(req, res) {
     { $addToSet: { thoughts: thought._id }},
     { new: true }
 )
-  })
-  .then((user) => res.json(user))
+res.json(thought)})
   .catch((err) => res.status(500).json(err));
 },
-
 
   //update a thought
   updateThought(req, res) {
@@ -83,7 +81,7 @@ addReaction(req, res) {
   )
   .then((thought) =>
   !thought
-    ? res.status(404).json({ message: 'No thought was given to the ID number, was it?.'})
+    ? res.status(404).json({ message: 'No thought was given, was it?.'})
     : res.json(thought)
   )
   .catch((err) => res.status(500).json(err));
